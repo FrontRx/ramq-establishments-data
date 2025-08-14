@@ -212,9 +212,9 @@ def merge_duplicate_group(group_df: pd.DataFrame, normalized_address: str) -> Di
     # ID (should be same for all in group)
     merged['id'] = group_df['id'].iloc[0]
     
-    # Merge ramq_code (semicolon-separated unique values)
+    # Merge ramq_code (comma-separated unique values)
     ramq_codes = group_df['ramq_code'].dropna().unique()
-    merged['ramq_code'] = ';'.join([str(code) for code in ramq_codes if code])
+    merged['ramq_code'] = ','.join([str(code) for code in ramq_codes if code])
     
     # Merge fax_numbers
     merged['fax_numbers'] = merge_fax_numbers(group_df['fax_numbers'].tolist())
@@ -270,7 +270,7 @@ def merge_duplicate_group(group_df: pd.DataFrame, normalized_address: str) -> Di
         if len(unique_cats) == 1:
             merged['ramq_billing_categories'] = unique_cats[0]
         else:
-            merged['ramq_billing_categories'] = ';'.join(unique_cats)
+            merged['ramq_billing_categories'] = ','.join(unique_cats)
     else:
         merged['ramq_billing_categories'] = ""
     
@@ -479,7 +479,7 @@ def main():
                 
                 # Also merge RAMQ codes from all records
                 all_ramq_codes = group['ramq_code'].dropna().unique()
-                first_record['ramq_code'] = ';'.join([str(code) for code in all_ramq_codes if code])
+                first_record['ramq_code'] = ','.join([str(code) for code in all_ramq_codes if code])
                 
                 clean_records.append(first_record)
                 
@@ -492,7 +492,7 @@ def main():
                     'id': place_id,
                     'normalized_address': 'MULTIPLE_ADDRESSES',
                     'source_row_count': len(group),
-                    'merged_ramq_codes': ';'.join([str(c) for c in group['ramq_code'].dropna().unique()]),
+                    'merged_ramq_codes': ','.join([str(c) for c in group['ramq_code'].dropna().unique()]),
                     'merged_fax_numbers': merge_fax_numbers(group['fax_numbers'].tolist()),
                     'field_conflicts': json.dumps({'addresses': group['_normalized_address'].unique().tolist()}),
                     'status': 'KEPT_FIRST_QUARANTINED_OTHERS'
